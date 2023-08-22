@@ -1,0 +1,318 @@
+library(tidyverse)
+library(readxl)
+###Curating a Cleaned Dataset from Recoded Survey Responses
+SCSdata <- read_xlsx("COVID_SCS_data_30 Jul (Final).xlsx")
+FinalSCSdata <- subset(SCSdata, area!="1" & area!="5"&(race_category=="1" | race_category=="2"| race_category=="3" | race_category=="4"))
+###Converting Exposures and Outcomes to Factors
+incalc <- as.factor(FinalSCSdata$alchl_comp)
+incmari <- as.factor(FinalSCSdata$mari_comp)
+housing_discrim <- as.factor(FinalSCSdata$housing_discrim)
+transport_discrim <- as.factor(FinalSCSdata$transport_discrim)
+edu_discrim <- as.factor(FinalSCSdata$edu_discrim)
+job_discrim <- as.factor(FinalSCSdata$job_discrim)
+health_discrim <- as.factor(FinalSCSdata$medical_discrim)
+police_violence <- as.factor(FinalSCSdata$police_violence)
+inter_discrim <- as.factor(FinalSCSdata$anticip_discrim)
+race <- as.factor(FinalSCSdata$race_category)
+city <- as.factor(FinalSCSdata$area)
+###Unadjusted Logistic Regression Models
+#Concordance Index for Model Fit
+library(survival)
+#Housing (Alcohol)
+hd_alc_model <- glm(incalc ~ housing_discrim, family = "binomial")
+summary(hd_alc_model)
+exp(coef(hd_alc_model))
+exp(confint(hd_alc_model))
+survival::concordance(hd_alc_model)
+#Housing (Marijuana)
+hd_mari_model <- glm(incmari ~ housing_discrim, family = "binomial")
+summary(hd_mari_model)
+exp(coef(hd_mari_model))
+exp(confint(hd_mari_model))
+survival:: concordance(hd_mari_model)
+#Transportation (Alcohol)
+td_alc_model <- glm(incalc ~ transport_discrim, family = "binomial")
+summary(td_alc_model)
+exp(coef(td_alc_model))
+exp(confint(td_alc_model))
+survival::concordance(td_alc_model)
+#Transportation (Marijuana)
+td_mari_model <- glm(incmari ~ transport_discrim, family = "binomial")
+summary(td_mari_model)
+exp(coef(td_mari_model))
+exp(confint(td_mari_model))
+survival::concordance(td_mari_model)
+#Educational (Alcohol)
+edu_alc_model <- glm(incalc ~ edu_discrim, family = "binomial")
+summary(edu_alc_model)
+exp(coef(edu_alc_model))
+exp(confint(edu_alc_model))
+survival::concordance(edu_alc_model)
+#Educational (Marijuana)
+edu_mari_model <- glm(incmari ~ edu_discrim, family = "binomial")
+summary(edu_mari_model)
+exp(coef(edu_mari_model))
+exp(confint(edu_mari_model))
+survival::concordance(edu_mari_model)
+#Job (Alcohol)
+job_alc_model <- glm(incalc ~ job_discrim, family = "binomial")
+summary(job_alc_model)
+exp(coef(job_alc_model))
+exp(confint(job_alc_model))
+survival::concordance(job_alc_model)
+#Job (Marijuana)
+job_mari_model <- glm(incmari ~ job_discrim, family = "binomial")
+summary(job_mari_model)
+exp(coef(job_mari_model))
+exp(confint(job_mari_model))
+survival::concordance(job_mari_model)
+#Healthcare (Alcohol)
+health_alc_model <- glm(incalc ~ health_discrim, family = "binomial")
+summary(health_alc_model)
+exp(coef(health_alc_model))
+exp(confint(health_alc_model))
+survival::concordance(health_alc_model)
+#Healthcare (Marijuana)
+health_mari_model <- glm(incmari ~ health_discrim, family = "binomial")
+summary(health_mari_model)
+exp(coef(health_mari_model))
+exp(confint(health_mari_model))
+survival::concordance(health_mari_model)
+#Police Violence (Alcohol)
+pv_alc_model <- glm(incalc ~ police_violence, family = "binomial")
+summary(pv_alc_model)
+exp(coef(pv_alc_model))
+exp(confint(pv_alc_model))
+survival::concordance(pv_alc_model)
+#Police Violence (Marijuana)
+pv_mari_model <- glm(incmari ~ police_violence, family = "binomial")
+summary(pv_mari_model)
+exp(coef(pv_mari_model))
+exp(confint(pv_mari_model))
+survival::concordance(pv_mari_model)
+#Interpersonal (Alcohol)
+inter_alc_model <- glm(incalc ~ inter_discrim, family = "binomial")
+summary(inter_alc_model)
+exp(coef(inter_alc_model))
+exp(confint(inter_alc_model))
+survival::concordance(inter_alc_model)
+#Interpersonal (Marijuana)
+inter_mari_model <- glm(incmari ~ inter_discrim, family = "binomial")
+summary(inter_mari_model)
+exp(coef(inter_mari_model))
+exp(confint(inter_mari_model))
+survival::concordance(inter_mari_model)
+###Converting Covariates to Factors
+gender <- as.factor(FinalSCSdata$gender)
+age_cat <- as.factor(FinalSCSdata$age_cat)
+area_tx <- as.factor(FinalSCSdata$area)
+edu <- as.factor(FinalSCSdata$edu)
+mar_stat <- as.factor(FinalSCSdata$mar_stat)
+brnusa <- as.factor(FinalSCSdata$brnusa)
+gen <- as.factor(FinalSCSdata$gen)
+orientation <- as.factor(FinalSCSdata$orientation)
+hins <- as.factor(FinalSCSdata$hins)
+fin_constraints <- as.factor(FinalSCSdata$fin_constraints)
+essent <- as.factor(FinalSCSdata$essent)
+cond <- as.factor(FinalSCSdata$cond)
+mhcond <- as.factor(FinalSCSdata$mhcond)
+race_cat <- as.factor(FinalSCSdata$race_category)
+edu_condensed <- as.factor(FinalSCSdata$edu_condensed)
+###Renaming and Releveling Covariates for Appropriate Reference Groups
+hd <- relevel(housing_discrim, ref = "0")
+td <- relevel(transport_discrim, ref = "0")
+edud <- relevel(edu_discrim, ref = "0")
+jobd <- relevel(job_discrim, ref = "0")
+healthd <- relevel(health_discrim, ref = "0")
+pvd <- relevel(police_violence, ref = "0")
+interd <- relevel(inter_discrim, ref = "0")
+age_cat_adj <- relevel(age_cat, ref = "1")
+edu_adj <- relevel(edu_condensed, ref = "1")
+mar_stat_adj <- relevel(mar_stat, ref = "1")
+#Mutating the Marital Status Covariate
+levels(mar_stat_adj)[levels(mar_stat_adj)=="6"] <-"1"
+levels(mar_stat_adj)[levels(mar_stat_adj)=="3"] <-"2"
+levels(mar_stat_adj)[levels(mar_stat_adj)=="4"] <-"2"
+levels(mar_stat_adj)[levels(mar_stat_adj)=="99"] <-"5"
+mar_stat_adj <- relevel(mar_stat_adj, ref = 1)
+###Adjusted Logistic Regression Models
+#Housing (Alcohol)
+hd_alc_model_all <- glm(incalc ~ hd + race_cat + gender + age_cat_adj + edu_adj + area_tx + mar_stat_adj + brnusa + orientation + hins + fin_constraints + essent + cond + mhcond, family = "binomial", data = FinalSCSdata)
+summary(hd_alc_model_all)
+exp(coef(hd_alc_model_all))
+exp(confint(hd_alc_model_all))
+survival::concordance(hd_alc_model_all)
+#Housing (Marijuana)
+hd_mari_model_all <- glm(incmari ~ hd + race_cat + gender + age_cat_adj + edu + area_tx + mar_stat_adj + brnusa + orientation + hins + fin_constraints + essent + cond + mhcond, family = "binomial", data = FinalSCSdata)
+summary(hd_mari_model_all)
+exp(coef(hd_mari_model_all))
+exp(confint(hd_mari_model_all))
+survival::concordance(hd_mari_model_all)
+#Transportation (Alcohol)
+td_alc_model_all <- glm(incalc ~ td + race_cat + gender + age_cat_adj + edu_adj + area_tx + mar_stat_adj + brnusa + orientation + hins + fin_constraints + essent + cond + mhcond, family = "binomial", data = FinalSCSdata)
+summary(td_alc_model_all)
+exp(coef(td_alc_model_all))
+exp(confint(td_alc_model_all))
+survival::concordance(td_alc_model_all)
+#Transportation (Marijuana)
+td_mari_model_all <- glm(incmari ~ td + race_cat + gender + age_cat_adj + edu + area_tx + mar_stat_adj + brnusa + orientation + hins + fin_constraints + essent + cond + mhcond, family = "binomial", data = FinalSCSdata)
+summary(td_mari_model_all)
+exp(coef(td_mari_model_all))
+exp(confint(td_mari_model_all))
+survival::concordance(td_mari_model_all)
+#Educational (Alcohol)
+edud_alc_model_all <- glm(incalc ~ edud + race_cat + gender + age_cat_adj + edu_adj + area_tx + mar_stat_adj + brnusa + orientation + hins + fin_constraints + essent + cond + mhcond, family = "binomial", data = FinalSCSdata)
+summary(edud_alc_model_all)
+exp(coef(edud_alc_model_all))
+exp(confint(edud_alc_model_all))
+survival::concordance(edud_alc_model_all)
+#Educational (Marijuana)
+edud_mari_model_all <- glm(incmari ~ edud + race_cat + gender + age_cat_adj + edu + area_tx + mar_stat_adj + brnusa + orientation + hins + fin_constraints + essent + cond + mhcond, family = "binomial", data = FinalSCSdata)
+summary(edud_mari_model_all)
+exp(coef(edud_mari_model_all))
+exp(confint(edud_mari_model_all))
+survival::concordance(edud_mari_model_all)
+#Job (Alcohol)
+jobd_alc_model_all <- glm(incalc ~ jobd + race_cat + gender + age_cat_adj + edu_adj + area_tx + mar_stat_adj + brnusa + orientation + hins + fin_constraints + essent + cond + mhcond, family = "binomial", data = FinalSCSdata)
+summary(jobd_alc_model_all)
+exp(coef(jobd_alc_model_all))
+exp(confint(jobd_alc_model_all))
+survival::concordance(jobd_alc_model_all)
+#Job (Marijuana)
+jobd_mari_model_all <- glm(incmari ~ jobd + race_cat + gender + age_cat_adj + edu + area_tx + mar_stat_adj + brnusa + orientation + hins + fin_constraints + essent + cond + mhcond, family = "binomial", data = FinalSCSdata)
+summary(jobd_mari_model_all)
+exp(coef(jobd_mari_model_all))
+exp(confint(jobd_mari_model_all))
+survival::concordance(jobd_mari_model_all)
+#Healthcare (Alcohol)
+healthd_alc_model_all <- glm(incalc ~ healthd + race_cat + gender + age_cat_adj + edu_adj + area_tx + mar_stat_adj + brnusa + orientation + hins + fin_constraints + essent + cond + mhcond, family = "binomial", data = FinalSCSdata)
+summary(healthd_alc_model_all)
+exp(coef(healthd_alc_model_all))
+exp(confint(healthd_alc_model_all))
+survival::concordance(healthd_alc_model_all)
+#Healthcare (Marijuana)
+healthd_mari_model_all <- glm(incmari ~ healthd + race_cat + gender + age_cat_adj + edu + area_tx + mar_stat_adj + brnusa + orientation + hins + fin_constraints + essent + cond + mhcond, family = "binomial", data = FinalSCSdata)
+summary(healthd_mari_model_all)
+exp(coef(healthd_mari_model_all))
+exp(confint(healthd_mari_model_all))
+survival::concordance(healthd_mari_model_all)
+#Police Violence (Alcohol)
+pvd_alc_model_all <- glm(incalc ~ pvd + race_cat + gender + age_cat_adj + edu_adj + area_tx + mar_stat_adj + brnusa + orientation + hins + fin_constraints + essent + cond + mhcond, family = "binomial", data = FinalSCSdata)
+summary(pvd_alc_model_all)
+exp(coef(pvd_alc_model_all))
+exp(confint(pvd_alc_model_all))
+survival::concordance(pvd_alc_model_all)
+#Police Violence (Marijuana)
+pvd_mari_model_all <- glm(incmari ~ pvd + race_cat + gender + age_cat_adj + edu + area_tx + mar_stat_adj + brnusa + orientation + hins + fin_constraints + essent + cond + mhcond, family = "binomial", data = FinalSCSdata)
+summary(pvd_mari_model_all)
+exp(coef(pvd_mari_model_all))
+exp(confint(pvd_mari_model_all))
+survival::concordance(pvd_mari_model_all)
+#Interpersonal (Alcohol)
+interd_alc_model_all <- glm(incalc ~ interd + race_cat + gender + age_cat_adj + edu_adj + area_tx + mar_stat_adj + brnusa + orientation + hins + fin_constraints + essent + cond + mhcond, family = "binomial", data = FinalSCSdata)
+summary(interd_alc_model_all)
+exp(coef(interd_alc_model_all))
+exp(confint(interd_alc_model_all))
+survival::concordance(interd_alc_model_all)
+#Interpersonal (Marijuana)
+interd_mari_model_all <- glm(incmari ~ interd + race_cat + gender + age_cat_adj + edu + area_tx + mar_stat_adj + brnusa + orientation + hins + fin_constraints + essent + cond + mhcond, family = "binomial", data = FinalSCSdata)
+summary(interd_mari_model_all)
+exp(coef(interd_mari_model_all))
+exp(confint(interd_mari_model_all))
+survival::concordance(interd_mari_model_all)
+###Multinomial Race Models
+#Making non-Hispanic White the Reference Group
+race_cat <- relevel(race_cat, ref = 4)
+library(nnet)
+#Housing Discrimination by Race
+hd_race_model <- multinom(housing_discrim ~ race_cat, data = FinalSCSdata)
+summary(hd_race_model)
+exp(coef(hd_race_model))
+zhousing <- summary(hd_race_model)$coefficients/summary(hd_race_model)$standard.errors
+zhousing
+phousing <- (1 - pnorm(abs(zhousing), 0, 1))*2
+phousing
+exp(coef(hd_race_model))
+exp(confint(hd_race_model))
+#Transportation Discrimination by Race
+td_race_model <- multinom(transport_discrim ~ race, data = FinalSCSdata)
+summary(td_race_model)
+ztransport <- summary(td_race_model)$coefficients/summary(td_race_model)$standard.errors
+ztransport
+ptransport <- (1 - pnorm(abs(ztransport), 0, 1))*2
+ptransport
+exp(coef(td_race_model))
+#Educational Discrimination by Race
+edu_race_model <- multinom(edu_discrim ~ race_cat, data = FinalSCSdata)
+summary(edu_race_model)
+zedu <- summary(edu_race_model)$coefficients/summary(edu_race_model)$standard.errors
+zedu
+pedu <- (1 - pnorm(abs(zedu), 0, 1))*2
+pedu
+exp(coef(edu_race_model))
+#Job Discrimination by Race
+job_race_model <- multinom(job_discrim ~ race, data = FinalSCSdata)
+summary(job_race_model)
+zjob <- summary(job_race_model)$coefficients/summary(job_race_model)$standard.errors
+zjob
+pjob <- (1 - pnorm(abs(zjob), 0, 1))*2
+pjob
+exp(coef(job_race_model))
+#Healthcare Discrimination by Race
+health_race_model <- multinom(health_discrim ~ race, data = FinalSCSdata)
+summary(health_race_model)
+zhealth <- summary(health_race_model)$coefficients/summary(health_race_model)$standard.errors
+zhealth
+phealth <- (1 - pnorm(abs(zhealth), 0, 1))*2
+phealth
+exp(coef(health_race_model))
+#Police Violence by Race
+pv_race_model <- multinom(police_violence ~ race, data = FinalSCSdata)
+summary(pv_race_model)
+zpv <- summary(pv_race_model)$coefficients/summary(pv_race_model)$standard.errors
+zpv
+ppv <- (1 - pnorm(abs(zpv), 0, 1))*2
+ppv
+exp(coef(pv_race_model))
+#Interpersonal Discrimination by Race
+inter_race_model <- multinom(inter_discrim ~ race, data = FinalSCSdata)
+summary(inter_race_model)
+zinter <- summary(inter_race_model)$coefficients/summary(inter_race_model)$standard.errors
+zinter
+pinter <- (1 - pnorm(abs(zinter), 0, 1))*2
+pinter
+exp(coef(inter_race_model))
+###Multinomial Race Models: Forest Plot Visualization
+library(ggplot2)
+library(ggeffects)
+library(readr)
+levels(race_cat) <-c ('Non-Hispanic White', 'Hispanic, Any Race', 'Non-Hispanic Black', 'Non-Hispanic Asian')
+table(race_cat)
+Racial_OddsRatios <- read_xlsx("Odds Ratios for Multinomial Logistic Regression.xlsx")
+view(Racial_OddsRatios)
+coef_plot <-Racial_OddsRatios %>%
+  mutate(`Racial Group` = case_when(
+    `Racial Group` == "Hispanic, Any Race" ~ "Hispanic, Any Race",
+    `Racial Group` == "Non-Hispanic Black" ~ "Non-Hispanic Black",
+    `Racial Group` == "Non-Hispanic Asian" ~ "Non-Hispanic Asian"),
+    `Type of Discrimination` = case_when(
+      `Type of Discrimination` == "Housing Discrimination" ~ "Housing Discrimination",
+      `Type of Discrimination` == "Transportation Discrimination" ~  "Transportation Discrimination",
+      `Type of Discrimination` == "Educational Discrimination" ~ "Educational Discrimination",
+      `Type of Discrimination` == "Job Discrimination" ~ "Job Discrimination",
+      `Type of Discrimination` == "Healthcare Discrimination"~ "Healthcare Discrimination",
+      `Type of Discrimination` == "Police Violence"~ "Police Violence",
+      `Type of Discrimination` == "Interpersonal Discrimination" ~ "Interpersonal Discrimination",))%>%
+  ggplot(aes(y = `Type of Discrimination`, x = `Odds Ratio`, pch = `Racial Group`,label = `Odds Ratio`)) +
+  geom_point(aes(y = `Type of Discrimination`, x = `Odds Ratio`), color= "#000000", size = 2) +  
+  geom_errorbarh(aes(xmax = `Upper 95% CI`, xmin = `Lower 95% CI`,height = .12), color ="#000000",linewidth = 0.6) +  
+  geom_vline(xintercept =1, linetype = "dashed") +
+  scale_shape_manual(values = c(0,1,2)) +
+  geom_text(size = 3, nudge_x = 2, nudge_y = 0.25, vjust = -0.25) + 
+  facet_grid(.~`Racial Group`) +
+  scale_x_continuous(name ="Odds Ratios", breaks = c(1,2,3,4,5,6,7,8,9,10)) +
+  theme(legend.position = "bottom")
+coef_plot
+
+install.packages("usethis")
+usethis::use_git_config(user.name="MI-MSc-MGH", user.email="misaac@alumni.nd.edu")
